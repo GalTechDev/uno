@@ -3,69 +3,95 @@ import random
 Lib = Lib_UsOS()
 
 card_ref = {
-'+2 bleu':"https://i.ibb.co/Ht8SBzq/2bleu.png",
-'+2 jaune':"https://i.ibb.co/pzQq06n/2jaune.png",
-'+2 rouge':"https://i.ibb.co/b270SJ3/2rouge.png",
-'+2 vert':"https://i.ibb.co/MkWhFjs/2vert.png",
-'+4 couleur':"https://i.ibb.co/Pzc24xx/4changement-de-couleur.png",
-'+4 bleu':"https://i.ibb.co/Pzc24xx/4changement-de-couleur.png",
-'+4 jaune':"https://i.ibb.co/Pzc24xx/4changement-de-couleur.png",
-'+4 rouge':"https://i.ibb.co/Pzc24xx/4changement-de-couleur.png",
-'+4 vert':"https://i.ibb.co/Pzc24xx/4changement-de-couleur.png",
-'0 bleu':"https://i.ibb.co/nf9BNpk/0bleu.png",
-'0 jaune':"https://i.ibb.co/yPYg5x8/0jaune.png",
-'0 rouge':"https://i.ibb.co/qYFDdvD/0rouge.png",
-'0 vert':"https://i.ibb.co/wdH48xY/0vert.png",
-'1 bleu':"https://i.ibb.co/LpWP4tX/1bleu.png",
-'1 jaune':"https://i.ibb.co/vXbVwxq/1jaune.png",
-'1 rouge':"https://i.ibb.co/wzDG0Dr/1rouge.png",
-'1 vert':"https://i.ibb.co/vqYNNcn/1vert.png",
-'2 bleu':"https://i.ibb.co/Lkkby8R/2bleu.png",
-'2 jaune':"https://i.ibb.co/WBnZvH3/2jaune.png",
-'2 rouge':"https://i.ibb.co/TTWbkhD/2rouge.png",
-'2 vert':"https://i.ibb.co/b3PbvQv/2vert.png",
-'3 bleu':"https://i.ibb.co/vvRys3c/3bleu.png",
-'3 jaune':"https://i.ibb.co/GWYNNG5/3jaune.png",
-'3 rouge':"https://i.ibb.co/vPftD9C/3rouge.png",
-'3 vert':"https://i.ibb.co/QFRYCcs/3vert.png",
-'4 bleu':"https://i.ibb.co/zVNFQGN/4bleu.png",
-'4 jaune':"https://i.ibb.co/tC1c5fF/4jaune.png",
-'4 rouge':"https://i.ibb.co/9NkYmbj/4rouge.png",
-'4 vert':"https://i.ibb.co/TL6YK4v/4vert.png",
-'5 bleu':"https://i.ibb.co/PtqmYqb/5bleu.png",
-'5 jaune':"https://i.ibb.co/wQr05X3/5jaune.png",
-'5 rouge':"https://i.ibb.co/DVSCKSc/5rouge.png",
-'5 vert':"https://i.ibb.co/fd8hBcP/5vert.png",
-'6 bleu':"https://i.ibb.co/HhBnRkN/6bleu.png",
-'6 jaune':"https://i.ibb.co/TT1T1SG/6jaune.png",
-'6 rouge':"https://i.ibb.co/87T92Mg/6rouge.png",
-'6 vert':"https://i.ibb.co/BP0pDPs/6vert.png",
-'7 bleu':"https://i.ibb.co/s2f1Ntj/7bleu.png",
-'7 jaune':"https://i.ibb.co/R7Lf1bG/7jaune.png",
-'7 rouge':"https://i.ibb.co/w45nQfT/7rouge.png",
-'7 vert':"https://i.ibb.co/grS8HL0/7vert.png",
-'8 bleu':"https://i.ibb.co/xF2rSYc/8bleu.png",
-'8 jaune':"https://i.ibb.co/8czGKDP/8jaune.png",
-'8 rouge':"https://i.ibb.co/TTdN2wp/8rouge.png",
-'8 vert':"https://i.ibb.co/rftH5mF/8vert.png",
-'9 bleu':"https://i.ibb.co/6PNXHdr/9bleu.png",
-'9 jaune':"https://i.ibb.co/pvj5Mnh/9jaune.png",
-'9 rouge':"https://i.ibb.co/3BBdjVL/9rouge.png",
-'9 vert':"https://i.ibb.co/ZJpKHch/9vert.png",
-'ch couleur':"https://i.ibb.co/rm80hJq/changement-de-couleur.png",
-'ch bleu':"https://i.ibb.co/rm80hJq/changement-de-couleur.png",
-'ch jaune':"https://i.ibb.co/rm80hJq/changement-de-couleur.png",
-'ch rouge':"https://i.ibb.co/rm80hJq/changement-de-couleur.png",
-'ch vert':"https://i.ibb.co/rm80hJq/changement-de-couleur.png",
-'inv bleu':"https://i.ibb.co/pdb8Bq5/inversement-de-sensbleu.png",
-'inv jaune':"https://i.ibb.co/bQT6w9H/inversement-de-sensjaune.png",
-'inv rouge':"https://i.ibb.co/3yNgrQx/inversement-de-sensrouge.png",
-'inv vert':"https://i.ibb.co/x2X0fs4/inversement-de-sensvert.png",
-'pass bleu':"https://i.ibb.co/0jNX5yv/passe-ton-tourbleu.png",
-'pass jaune':"https://i.ibb.co/nBBcnrV/passe-ton-tourjaune.png",
-'pass rouge':"https://i.ibb.co/zGwbHKj/passe-ton-tourrouge.png",
-'pass vert':"https://i.ibb.co/1KTYtsg/passe-ton-tourvert.png"
+    '+2 bleu':"https://i.ibb.co/Ht8SBzq/2bleu.png",
+    '+2 jaune':"https://i.ibb.co/pzQq06n/2jaune.png",
+    '+2 rouge':"https://i.ibb.co/b270SJ3/2rouge.png",
+    '+2 vert':"https://i.ibb.co/MkWhFjs/2vert.png",
+    '+4 couleur':"https://i.ibb.co/Pzc24xx/4changement-de-couleur.png",
+    '+4 bleu':"https://i.ibb.co/Pzc24xx/4changement-de-couleur.png",
+    '+4 jaune':"https://i.ibb.co/Pzc24xx/4changement-de-couleur.png",
+    '+4 rouge':"https://i.ibb.co/Pzc24xx/4changement-de-couleur.png",
+    '+4 vert':"https://i.ibb.co/Pzc24xx/4changement-de-couleur.png",
+    '0 bleu':"https://i.ibb.co/nf9BNpk/0bleu.png",
+    '0 jaune':"https://i.ibb.co/yPYg5x8/0jaune.png",
+    '0 rouge':"https://i.ibb.co/qYFDdvD/0rouge.png",
+    '0 vert':"https://i.ibb.co/wdH48xY/0vert.png",
+    '1 bleu':"https://i.ibb.co/LpWP4tX/1bleu.png",
+    '1 jaune':"https://i.ibb.co/vXbVwxq/1jaune.png",
+    '1 rouge':"https://i.ibb.co/wzDG0Dr/1rouge.png",
+    '1 vert':"https://i.ibb.co/vqYNNcn/1vert.png",
+    '2 bleu':"https://i.ibb.co/Lkkby8R/2bleu.png",
+    '2 jaune':"https://i.ibb.co/WBnZvH3/2jaune.png",
+    '2 rouge':"https://i.ibb.co/TTWbkhD/2rouge.png",
+    '2 vert':"https://i.ibb.co/b3PbvQv/2vert.png",
+    '3 bleu':"https://i.ibb.co/vvRys3c/3bleu.png",
+    '3 jaune':"https://i.ibb.co/GWYNNG5/3jaune.png",
+    '3 rouge':"https://i.ibb.co/vPftD9C/3rouge.png",
+    '3 vert':"https://i.ibb.co/QFRYCcs/3vert.png",
+    '4 bleu':"https://i.ibb.co/zVNFQGN/4bleu.png",
+    '4 jaune':"https://i.ibb.co/tC1c5fF/4jaune.png",
+    '4 rouge':"https://i.ibb.co/9NkYmbj/4rouge.png",
+    '4 vert':"https://i.ibb.co/TL6YK4v/4vert.png",
+    '5 bleu':"https://i.ibb.co/PtqmYqb/5bleu.png",
+    '5 jaune':"https://i.ibb.co/wQr05X3/5jaune.png",
+    '5 rouge':"https://i.ibb.co/DVSCKSc/5rouge.png",
+    '5 vert':"https://i.ibb.co/fd8hBcP/5vert.png",
+    '6 bleu':"https://i.ibb.co/HhBnRkN/6bleu.png",
+    '6 jaune':"https://i.ibb.co/TT1T1SG/6jaune.png",
+    '6 rouge':"https://i.ibb.co/87T92Mg/6rouge.png",
+    '6 vert':"https://i.ibb.co/BP0pDPs/6vert.png",
+    '7 bleu':"https://i.ibb.co/s2f1Ntj/7bleu.png",
+    '7 jaune':"https://i.ibb.co/R7Lf1bG/7jaune.png",
+    '7 rouge':"https://i.ibb.co/w45nQfT/7rouge.png",
+    '7 vert':"https://i.ibb.co/grS8HL0/7vert.png",
+    '8 bleu':"https://i.ibb.co/xF2rSYc/8bleu.png",
+    '8 jaune':"https://i.ibb.co/8czGKDP/8jaune.png",
+    '8 rouge':"https://i.ibb.co/TTdN2wp/8rouge.png",
+    '8 vert':"https://i.ibb.co/rftH5mF/8vert.png",
+    '9 bleu':"https://i.ibb.co/6PNXHdr/9bleu.png",
+    '9 jaune':"https://i.ibb.co/pvj5Mnh/9jaune.png",
+    '9 rouge':"https://i.ibb.co/3BBdjVL/9rouge.png",
+    '9 vert':"https://i.ibb.co/ZJpKHch/9vert.png",
+    'ch couleur':"https://i.ibb.co/rm80hJq/changement-de-couleur.png",
+    'ch bleu':"https://i.ibb.co/rm80hJq/changement-de-couleur.png",
+    'ch jaune':"https://i.ibb.co/rm80hJq/changement-de-couleur.png",
+    'ch rouge':"https://i.ibb.co/rm80hJq/changement-de-couleur.png",
+    'ch vert':"https://i.ibb.co/rm80hJq/changement-de-couleur.png",
+    'inv bleu':"https://i.ibb.co/pdb8Bq5/inversement-de-sensbleu.png",
+    'inv jaune':"https://i.ibb.co/bQT6w9H/inversement-de-sensjaune.png",
+    'inv rouge':"https://i.ibb.co/3yNgrQx/inversement-de-sensrouge.png",
+    'inv vert':"https://i.ibb.co/x2X0fs4/inversement-de-sensvert.png",
+    'pass bleu':"https://i.ibb.co/0jNX5yv/passe-ton-tourbleu.png",
+    'pass jaune':"https://i.ibb.co/nBBcnrV/passe-ton-tourjaune.png",
+    'pass rouge':"https://i.ibb.co/zGwbHKj/passe-ton-tourrouge.png",
+    'pass vert':"https://i.ibb.co/1KTYtsg/passe-ton-tourvert.png"
 }
+
+emotes = {
+    "couleur": "",
+    "+4": "🔲 +4",
+    "ch": "⬛️ couleur",
+    "+2": "+2 ",
+    "pass": "🚫",
+    "inv": "🔃",
+    "rouge": "🟥",
+    "bleu": "🟦",
+    "jaune": "🟨",
+    "vert": "🟩",
+    "0": "0️⃣",
+    "1": "1️⃣",
+    "2": "2️⃣",
+    "3": "3️⃣",
+    "4": "4️⃣",
+    "5": "5️⃣",
+    "6": "6️⃣",
+    "7": "7️⃣",
+    "8": "8️⃣",
+    "9": "9️⃣"
+}
+
+# f'{emotes[valeur]}{emotes[couleur]}' -> carte normale / action
+# f'{emotes[valeur]}' -> +4 / ch couleur
 
 async def valide_intaraction(interaction:discord.Interaction):
     try:
@@ -132,9 +158,31 @@ class Player:
     def delete_carte(self, carte: Carte):
         if carte in self.cartes:
             self.cartes.remove(carte)
+    
+    def tri_cartes(self):
+        ordo = []
+        for coul in ["couleur", "bleu", "rouge", "jaune", "vert"]:
+            for carte in self.cartes:
+                if carte.couleur == coul:
+                    ordo.append(carte)
 
-    def get_embed(self):
-        emebd = discord.Embed(title="Choisi une carte :", description=f"Il vous reste {len(self.cartes)} carte{'s' if len(self.cartes)>1 else ''}")
+        self.cartes = ordo
+
+    def count_cartes_color(self):
+        ordo = {}
+        for coul in ["couleur", "bleu", "rouge", "jaune", "vert"]:
+            ordo[coul] = 0
+            for carte in self.cartes:
+                if carte.couleur == coul:
+                    ordo[coul] += 1
+
+        return ordo
+
+    def get_embed(self, joueur):
+        if self == joueur:
+            emebd = discord.Embed(title="Choisi une carte :", description=f"Il vous reste {len(self.cartes)} carte{'s' if len(self.cartes)>1 else ''}")
+        else:
+            emebd = discord.Embed(title=f"{joueur.ctx.user.name} joue...", description=f"Il vous reste {len(self.cartes)} carte{'s' if len(self.cartes)>1 else ''}")
         return emebd
 
     def build_str(self):
@@ -160,7 +208,7 @@ class Game:
         self.started = False
         self.pioche = self.gen_pioche()
 
-    def get_joueur(self, user_id: int):
+    def get_joueur(self, user_id: int) -> Player:
         for joueur in self.joueurs:
             if user_id == joueur.id:
                 return joueur
@@ -224,13 +272,13 @@ class Game:
 
         return False
 
-    def embed_stat(self):
+    def embed_stat(self) -> discord.Embed:
         embed = discord.Embed()
         if not self.started and len(self.joueurs) < 4:
             embed.title = "En attente de joueurs"
             embed.description = f"Nombre de Joueurs : ` {len(self.joueurs)}/4 `"
         else:
-            embed.title = f"{self.joueurs[0].ctx.user.name} joue..."
+            embed.title = f"{self.get_current_joueur().ctx.user.name} joue..."
             if self.carte_actuelle!=None:
                 embed.set_image(url=self.carte_actuelle.url)
                 if self.carte_actuelle.couleur == "bleu":
@@ -243,10 +291,14 @@ class Game:
                     embed.color=discord.Color.green()
                 else:
                     embed.color=discord.Color.light_grey()
+        if self.end:
+            for joueur in self.joueurs:
+                if len(joueur.cartes)==0:
+                    embed.title = f"{joueur.ctx.user.name} a gagné"
 
         return embed
     
-    def pioche_carte(self):
+    def pioche_carte(self) -> Carte:
         return self.pioche.pop()
 
     def joueur_pioche(self, joueur: Player):
@@ -258,42 +310,33 @@ class Game:
     def deffause_carte(self, joueur: Player, carte: Carte):
         joueur.delete_carte(carte)
     
-    def est_jouable(self, carte: Carte):
+    def est_jouable(self, carte: Carte) -> bool:
         car = self.carte_actuelle
-        print(carte)
         
         if not car:
             return True
         
         elif carte == "pioche":
-            print("cas 1")
             return True
         
         elif car.valeur == "+2" and self.somme_plus and carte.valeur not in ["+2", "+4", "ch"]:
-            print("cas 2", self.somme_plus)
             return False
 
         if car.valeur in ["+4", "ch"] and carte.valeur in ["+4", "ch"]:
-            print("cas 3")
             return False
 
         elif carte.couleur == car.couleur:
-            print("cas 4")
             return True
 
         elif carte.valeur == car.valeur:
-            print("cas 5")
             return True
         
         elif carte.couleur == "couleur" and car.valeur == "+2":
-            print("cas 6")
             return True
         
         elif carte.couleur == "couleur":
-            print("cas 7")
             return True
 
-        print("cas fin")
         return False
     
     def saute_tour(self):
@@ -328,7 +371,8 @@ class Game:
 
     def joue_tour(self, carte: Carte, couleur: str = None) -> Player:
         joueur = self.get_current_joueur()
-
+        joueur.tri_cartes()
+        
         if len(self.pioche) <= 0:
             self.pioche = self.gen_pioche()
 
@@ -367,14 +411,16 @@ class Game:
             self.end = True
 
         self.prochain_joueur()
+        self.get_current_joueur().tri_cartes()
         return self.get_current_joueur()
 
     def start(self):
         for joueur in self.joueurs:
             for i in range(7):
                 self.joueur_pioche(joueur)
-            
-            joueur.cartes.append(Carte("couleur", "+4"))
+
+            joueur.tri_cartes()
+            #joueur.cartes.append(Carte("couleur", "+4"))
 
         while self.pioche[-1].valeur in ["+4", "ch", "pass", "inv", "+2"]:
             random.shuffle(self.pioche)
@@ -390,6 +436,14 @@ class Game:
 
     async def update_embed(self):
         await self.ctx.edit_original_response(embed=self.embed_stat())
+
+    async def update_player_embed(self):
+        for player in self.joueurs:
+            if not self.end:
+                await player.ctx.edit_original_response(embed=player.get_embed(self.get_current_joueur()))
+            else:
+                await player.ctx.edit_original_response(embed=discord.Embed(title="Partie terminé"), view=None)
+
         
     def build_str(self):
         res = ""
@@ -424,6 +478,24 @@ class Games:
 games = Games()
 
 #------------------------------ View --------------------------------
+class Game_view(discord.ui.View):
+    def __init__(self, game: Game, timeout=180):
+        super().__init__(timeout=timeout)
+        self.game = game
+
+    @discord.ui.button(emoji="\u23EF", style=discord.ButtonStyle.primary)
+    async def get_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        if interaction.user.id in [joueur.id  for joueur in self.game.joueurs]:
+            try:
+                await self.game.get_joueur(interaction.user.id).ctx.delete_original_response()
+            except:
+                pass
+            self.game.get_joueur(interaction.user.id).ctx = interaction
+            await interaction.response.send_message(embed=self.game.get_joueur(interaction.user.id).get_embed(self.game.get_current_joueur()), view=Player_view(self.game) if self.game.get_joueur(interaction.user.id)==self.game.get_current_joueur() else None, ephemeral=True)
+        else:
+            await valide_intaraction(interaction)
+
+        
 
 class Uno_view(discord.ui.View):
     def __init__(self, game: Game, timeout=180):
@@ -444,7 +516,8 @@ class Uno_view(discord.ui.View):
     async def start_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         self.game.start()
         await self.game.update_embed()
-        await self.game.get_current_joueur().ctx.edit_original_response(embed=self.game.get_current_joueur().get_embed(), view=Player_view(self.game))
+        await self.game.ctx.edit_original_response(view=Game_view(self.game))
+        await self.game.get_current_joueur().ctx.edit_original_response(embed=self.game.get_current_joueur().get_embed(self.game.get_current_joueur()), view=Player_view(self.game))
         await valide_intaraction(interaction)
 
     @discord.ui.button(label="Quitter", style=discord.ButtonStyle.red)
@@ -457,7 +530,7 @@ class Uno_view(discord.ui.View):
 
 class Cartes_select(discord.ui.Select):
     def __init__(self, game: Game, joueur: Player, options) -> None:
-        super().__init__(placeholder=f"Choisi une carte",max_values=1,min_values=1,options=options)
+        super().__init__(placeholder=f"Choisi une carte", max_values=1, min_values=1, options=options)
         self.game = game
         self.joueur = joueur
 
@@ -475,8 +548,10 @@ class Cartes_select(discord.ui.Select):
                 await valide_intaraction(interaction) 
                 joueur_next = self.game.joue_tour(carte)
                 await self.game.update_embed()
-                await self.joueur.ctx.edit_original_response(embed=self.joueur.get_embed())
-                await joueur_next.ctx.edit_original_response(embed=joueur_next.get_embed(), view=Player_view(self.game))
+                await self.game.update_player_embed()
+                #await self.joueur.ctx.edit_original_response(embed=self.joueur.get_embed())
+                if not self.game.end:
+                    await joueur_next.ctx.edit_original_response(view=Player_view(self.game))
         else:
             await valide_intaraction(interaction) 
             pass #ici le joueur choisi une mauvaise carte
@@ -512,8 +587,10 @@ class Color_view(discord.ui.View):
         await self.player.ctx.edit_original_response(view=None)
         joueur_next = self.game.joue_tour(self.carte, couleur)
         await self.game.update_embed()
-        await self.player.ctx.edit_original_response(embed=self.player.get_embed())
-        await joueur_next.ctx.edit_original_response(embed=joueur_next.get_embed(), view=Player_view(self.game))
+        #await self.player.ctx.edit_original_response(embed=self.player.get_embed())
+        await self.game.update_player_embed()
+        if not self.game.end:
+            await joueur_next.ctx.edit_original_response(view=Player_view(self.game)) #embed=joueur_next.get_embed()
 
 
 class Player_view(discord.ui.View):
@@ -521,11 +598,11 @@ class Player_view(discord.ui.View):
         super().__init__(timeout=timeout)
         self.game = game
         self.player = game.get_current_joueur()
-        print([f"{cart.couleur} {cart.valeur}" for cart in self.player.cartes])
+        # print([f"{cart.couleur} {cart.valeur}" for cart in self.player.cartes])
         i=0
         options=[]
         for carte in list(self.player.cartes):
-            options.append(discord.SelectOption(label=f"{i+1}) {carte.valeur} {carte.couleur}"))
+            options.append(discord.SelectOption(label=f"{emotes[carte.valeur]}{emotes[carte.couleur]}", value=f"{i+1} {carte.valeur} {carte.couleur}"))
             i+=1
             if i==25:
                 i=0
@@ -540,8 +617,13 @@ class Player_view(discord.ui.View):
         await valide_intaraction(interaction)
         joueur_next = self.game.joue_tour("pioche")
         await self.game.update_embed()
-        await self.player.ctx.edit_original_response(embed=self.player.get_embed())
-        await joueur_next.ctx.edit_original_response(embed=joueur_next.get_embed(), view=Player_view(self.game))
+        #await self.player.ctx.edit_original_response(embed=self.player.get_embed())
+        await self.game.update_player_embed()
+        if not self.game.end:
+            await joueur_next.ctx.edit_original_response(view=Player_view(self.game))
+
+        
+
 
 
 @Lib.app.slash(name="uno", description="créé une nouvelle partie de uno", force_name=True)
