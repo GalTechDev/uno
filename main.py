@@ -520,7 +520,7 @@ class Uno_view(discord.ui.View):
         super().__init__(timeout=timeout)
         self.game = game
 
-    @discord.ui.button(label="Rejoindre", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Rejoindre", style=discord.ButtonStyle.green)
     async def join_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         if self.game.add_joueur(interaction):
             await interaction.response.send_message(embed=discord.Embed(title="Vous avez bien rejoint, merci de ne pas fermer ce message et d'attendre la debut de la partie"), ephemeral=True)
@@ -538,6 +538,12 @@ class Uno_view(discord.ui.View):
             await self.game.ctx.edit_original_response(view=Game_view(self.game))
             await self.game.update_player_embed()
             await self.game.get_current_joueur().ctx.edit_original_response(view=Player_view(self.game))
+        await valide_intaraction(interaction)
+    
+    @discord.ui.button(label="Règle", style=discord.ButtonStyle.blurple, disabled=True)
+    async def rule_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        if interaction.user == self.game.host:
+            pass
         await valide_intaraction(interaction)
 
     @discord.ui.button(label="Quitter", style=discord.ButtonStyle.red)
@@ -702,7 +708,7 @@ class Game_select_view(discord.ui.View):
             self.add_item(Game_select(game, options))
 
 
-@Lib.app.slash(name="uno", description="créé une nouvelle partie de uno", force_name=True, guilds=None)
+@Lib.app.slash(name="uno", description="créé une nouvelle partie de uno", force_name=True, guilds=None) #, guilds=None to enable mp playing, remove to disable
 async def uno(ctx: discord.Interaction, nom:str):
     try:
         game = games.create_game(ctx, nom)
@@ -710,10 +716,9 @@ async def uno(ctx: discord.Interaction, nom:str):
     except Exception as error:
         print(error)
     
-@Lib.app.slash(name="join", description="rejoingnez une partie de uno", guilds=None)
+@Lib.app.slash(name="join", description="rejoingnez une partie de uno", guilds=None) #, guilds=None to enable mp playing, remove to disable
 async def join(ctx: discord.Interaction):
     try:
         await ctx.response.send_message(embed=discord.Embed(title="Salon"), view=Game_select_view(games), ephemeral=True)
     except Exception as error:
         print(error)
-    
