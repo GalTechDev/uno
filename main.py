@@ -69,7 +69,7 @@ card_ref = {
 
 emotes = {
     "couleur": "",
-    "+4": "🔲 +4",
+    "+4": "🔳 +4",
     "ch": "⬛️ couleur",
     "+2": "+2 ",
     "pass": "🚫",
@@ -180,10 +180,10 @@ class Player:
 
     def get_embed(self, joueur):
         if self == joueur:
-            emebd = discord.Embed(title="Choisi une carte :", description=f"Il vous reste {len(self.cartes)} carte{'s' if len(self.cartes)>1 else ''}")
+            embed = discord.Embed(title="Choisi une carte :", description=f"Il vous reste {len(self.cartes)} carte{'s' if len(self.cartes)>1 else ''}")
         else:
-            emebd = discord.Embed(title=f"{joueur.ctx.user.name} joue...", description=f"Il vous reste {len(self.cartes)} carte{'s' if len(self.cartes)>1 else ''}")
-        return emebd
+            embed = discord.Embed(title=f"{joueur.ctx.user.name} joue...", description=f"Il vous reste {len(self.cartes)} carte{'s' if len(self.cartes)>1 else ''}")
+        return embed
 
     def build_str(self):
         res = ""
@@ -197,9 +197,10 @@ class Player:
     
 
 class Game:
-    def __init__(self, ctx: discord.Interaction) -> None:
+    def __init__(self, ctx: discord.Interaction, nom) -> None:
         self.ctx = ctx
         self.host = ctx.user
+        self.nom = nom
         self.end = False
         self.joueurs = []
         self.joueur_actuel = 0
@@ -274,9 +275,12 @@ class Game:
 
     def embed_stat(self) -> discord.Embed:
         embed = discord.Embed()
+        embed.set_author(name=f"Game : {self.nom} host par : {self.host.name}", icon_url=self.host.avatar.url)
         if not self.started and len(self.joueurs) < 4:
             embed.title = "En attente de joueurs"
             embed.description = f"Nombre de Joueurs : ` {len(self.joueurs)}/4 `"
+            for joueur in self.joueurs:
+                embed.add_field(name=f"{joueur.ctx.user.name}", value='\u200b')
         else:
             embed.title = f"{self.get_current_joueur().ctx.user.name} joue..."
             if self.carte_actuelle!=None:
@@ -291,10 +295,15 @@ class Game:
                     embed.color=discord.Color.green()
                 else:
                     embed.color=discord.Color.light_grey()
+            if not self.end:
+                embed.description = f"Prochain joueur : {self.get_next_joueur().ctx.user.name}"
+                for joueur in self.joueurs:
+                    embed.add_field(name=f"{joueur.ctx.user.name} :", value=f"{len(joueur.cartes)} cartes")
         if self.end:
             for joueur in self.joueurs:
                 if len(joueur.cartes)==0:
                     embed.title = f"{joueur.ctx.user.name} a gagné"
+                    break
 
         return embed
     
@@ -436,13 +445,17 @@ class Game:
 
     async def update_embed(self):
         await self.ctx.edit_original_response(embed=self.embed_stat())
+        if self.end:
+            await self.ctx.edit_original_response(view=None)
 
     async def update_player_embed(self):
         for player in self.joueurs:
-            if not self.end:
-                await player.ctx.edit_original_response(embed=player.get_embed(self.get_current_joueur()))
+            if not self.end and self.started:
+                await player.ctx.edit_original_response(embeds=[self.embed_stat(), player.get_embed(self.get_current_joueur())])
+            elif not self.started:
+                await player.ctx.edit_original_response(embed=self.embed_stat())
             else:
-                await player.ctx.edit_original_response(embed=discord.Embed(title="Partie terminé"), view=None)
+                await player.ctx.edit_original_response(embeds=[self.embed_stat(), discord.Embed(title="Partie terminé")], view=None)
 
         
     def build_str(self):
@@ -461,8 +474,8 @@ class Games:
     def __init__(self) -> None:
         self.games = []
     
-    def create_game(self, ctx: discord.Interaction):
-        game = Game(ctx)
+    def create_game(self, ctx: discord.Interaction, nom: str):
+        game = Game(ctx, nom)
         self.games.append(game)
         return game
 
@@ -472,6 +485,11 @@ class Games:
     def get_game(self, ctx: discord.Interaction):
         for game in self.games:
             if game.ctx == ctx:
+                return game
+
+    def get_game_by_name(self, nom: discord.Interaction) -> Game:
+        for game in self.games:
+            if game.nom == nom:
                 return game
 
 
@@ -491,7 +509,7 @@ class Game_view(discord.ui.View):
             except:
                 pass
             self.game.get_joueur(interaction.user.id).ctx = interaction
-            await interaction.response.send_message(embed=self.game.get_joueur(interaction.user.id).get_embed(self.game.get_current_joueur()), view=Player_view(self.game) if self.game.get_joueur(interaction.user.id)==self.game.get_current_joueur() else None, ephemeral=True)
+            await interaction.response.send_message(embeds=[self.game.embed_stat(), self.game.get_joueur(interaction.user.id).get_embed(self.game.get_current_joueur())], view=Player_view(self.game) if self.game.get_joueur(interaction.user.id)==self.game.get_current_joueur() else None, ephemeral=True)
         else:
             await valide_intaraction(interaction)
 
@@ -506,42 +524,48 @@ class Uno_view(discord.ui.View):
     async def join_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         if self.game.add_joueur(interaction):
             await interaction.response.send_message(embed=discord.Embed(title="Vous avez bien rejoint, merci de ne pas fermer ce message et d'attendre la debut de la partie"), ephemeral=True)
+            await self.game.update_player_embed()
+            await self.game.update_embed()
         else:
             pass
-
-        await self.game.update_embed()
         await valide_intaraction(interaction)
 
     @discord.ui.button(label="Commencer", style=discord.ButtonStyle.grey)
     async def start_button(self, interaction:discord.Interaction, button:discord.ui.Button):
-        self.game.start()
-        await self.game.update_embed()
-        await self.game.ctx.edit_original_response(view=Game_view(self.game))
-        await self.game.get_current_joueur().ctx.edit_original_response(embed=self.game.get_current_joueur().get_embed(self.game.get_current_joueur()), view=Player_view(self.game))
+        if interaction.user == self.game.host:
+            self.game.start()
+            await self.game.update_embed()
+            await self.game.ctx.edit_original_response(view=Game_view(self.game))
+            await self.game.update_player_embed()
+            await self.game.get_current_joueur().ctx.edit_original_response(view=Player_view(self.game))
         await valide_intaraction(interaction)
 
     @discord.ui.button(label="Quitter", style=discord.ButtonStyle.red)
     async def leave_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         if self.game.remove_joueur(interaction):
             await interaction.response.send_message(embed=discord.Embed(title="Vous avez bien quitté"), ephemeral=True)
-        await self.game.update_embed()
+            await self.game.update_player_embed()
+            await self.game.update_embed()
         await valide_intaraction(interaction)
 
 
 class Cartes_select(discord.ui.Select):
-    def __init__(self, game: Game, joueur: Player, options) -> None:
+    def __init__(self, game: Game, joueur: Player, options, enable=True) -> None:
         super().__init__(placeholder=f"Choisi une carte", max_values=1, min_values=1, options=options)
         self.game = game
         self.joueur = joueur
+        self.enable = enable
 
     async def callback(self, interaction: discord.Interaction):
         carte_ref = self.values[0]
         couleur = carte_ref.split(" ")[2]
         valeur = carte_ref.split(" ")[1]
         carte = self.joueur.get_carte(couleur=couleur, valeur=valeur)
-        if self.game.est_jouable(carte):
+        if self.game.est_jouable(carte) and self.enable:
             if carte.valeur == "ch" or carte.valeur == "+4":
                 await valide_intaraction(interaction)
+                #embed = discord.Embed(title="Choisi une carte :", description=f"Il vous reste {len(self.cartes)} carte{'s' if len(self.cartes)>1 else ''}")
+
                 await self.joueur.ctx.edit_original_response(view=Color_view(self.game, carte))
             else:
                 await self.joueur.ctx.edit_original_response(view=None)
@@ -557,11 +581,24 @@ class Cartes_select(discord.ui.Select):
             pass #ici le joueur choisi une mauvaise carte
         
 class Color_view(discord.ui.View):
-    def __init__(self, game: Game, carte: Carte, timeout=180):
+    def __init__(self, game: Game, carte: Carte, enable=True, timeout=180):
         super().__init__(timeout=timeout)
         self.game = game
         self.player = game.get_current_joueur()
         self.carte = carte
+        self.enable = enable
+
+        i=0
+        options=[]
+        for carte in list(self.player.cartes):
+            options.append(discord.SelectOption(label=f"{emotes[carte.valeur]}{emotes[carte.couleur]}", value=f"{i+1} {carte.valeur} {carte.couleur}"))
+            i+=1
+            if i==25:
+                i=0
+                self.add_item(Cartes_select(self.game, self.player, options, False))
+                options=[]
+        if options!=[]:
+            self.add_item(Cartes_select(self.game, self.player, options, False))
         
     @discord.ui.button(label="Bleu", style=discord.ButtonStyle.primary)
     async def blue_button(self, interaction:discord.Interaction, button:discord.ui.Button):
@@ -616,21 +653,67 @@ class Player_view(discord.ui.View):
         await self.player.ctx.edit_original_response(view=None)
         await valide_intaraction(interaction)
         joueur_next = self.game.joue_tour("pioche")
-        await self.game.update_embed()
-        #await self.player.ctx.edit_original_response(embed=self.player.get_embed())
         await self.game.update_player_embed()
+        await self.game.update_embed()
+
         if not self.game.end:
             await joueur_next.ctx.edit_original_response(view=Player_view(self.game))
 
+class Game_select(discord.ui.Select):
+    def __init__(self, game: Game, options) -> None:
+        super().__init__(placeholder=f"Choisi une game", max_values=1, min_values=0, options=options)
+        self.game = game
         
 
+    async def callback(self, interaction: discord.Interaction):
+        if not self.game.started:
+            if self.values==[]:
+                if self.game.remove_joueur(interaction):
+                    await interaction.response.send_message(embed=discord.Embed(title="Vous avez bien quitté"), ephemeral=True)
+                    await self.game.update_player_embed()
+                    await self.game.update_embed()
+            else:
+                #game_ref = self.values[0]
+                #nom = game_ref[len(game_ref.split(" ")[0])+1:]
+                if self.game.add_joueur(interaction):
+                    await interaction.response.send_message(embed=discord.Embed(title="Vous avez bien rejoint, merci de ne pas fermer ce message et d'attendre la debut de la partie"), ephemeral=False if interaction.guild==None else True)
+                    await self.game.update_player_embed()
+                    await self.game.update_embed()
+        else:
+            await interaction.delete_original_response()
+
+        await valide_intaraction(interaction)
+
+class Game_select_view(discord.ui.View):
+    def __init__(self, games: Games, timeout=180):
+        super().__init__(timeout=timeout)
+        self.games = games
+        i=0
+        options=[]
+        for game in list(self.games.games):
+            if not game.started:
+                options.append(discord.SelectOption(label=f"{game.nom}", description=f"Joueurs : {len(game.joueurs)}/4", value=f"{i+1} {game.nom}"))
+                i+=1
+                if i==25:
+                    i=0
+                    self.add_item(Game_select(game, options))
+                    options=[]
+        if options!=[]:
+            self.add_item(Game_select(game, options))
 
 
-@Lib.app.slash(name="uno", description="créé une nouvelle partie de uno", force_name=True)
-async def uno(ctx: discord.Interaction):
+@Lib.app.slash(name="uno", description="créé une nouvelle partie de uno", force_name=True, guilds=None)
+async def uno(ctx: discord.Interaction, nom:str):
     try:
-        game = games.create_game(ctx)
+        game = games.create_game(ctx, nom)
         await ctx.response.send_message(embed=game.embed_stat(), view=Uno_view(game))
+    except Exception as error:
+        print(error)
+    
+@Lib.app.slash(name="join", description="rejoingnez une partie de uno", guilds=None)
+async def join(ctx: discord.Interaction):
+    try:
+        await ctx.response.send_message(embed=discord.Embed(title="Salon"), view=Game_select_view(games), ephemeral=True)
     except Exception as error:
         print(error)
     
