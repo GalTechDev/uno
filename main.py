@@ -90,6 +90,7 @@ emotes = {
     "9": "9️⃣"
 }
 
+
 # f'{emotes[valeur]}{emotes[couleur]}' -> carte normale / action
 # f'{emotes[valeur]}' -> +4 / ch couleur
 
@@ -123,6 +124,7 @@ class Player:
         self.ctx = ctx
         self.cartes = []
         self.id = ctx.user.id
+        self.pioche = False
     
     def get_carte(self, couleur: str, valeur: str) -> Carte:
         for carte in self.cartes:
@@ -197,6 +199,13 @@ class Player:
     
 
 class Game:
+    rules = {
+        "noir_cumul": {"label": "Cumule changement de couleur", "description": "permet de cumuler les cartes changement de couleur", "value": True},
+        "+4_pass": {"label": "Passe +4", "description": "passe apres un +4", "value": True},
+        "+2_pass": {"label": "Passe +2", "description": "passe apres un +2", "value": True},
+        "pioche_rejoue": {"label": "Rejouer", "description": "Rejouer après avoir pioché", "value": False}
+    }
+
     def __init__(self, ctx: discord.Interaction, nom) -> None:
         self.ctx = ctx
         self.host = ctx.user
@@ -275,7 +284,7 @@ class Game:
 
     def embed_stat(self) -> discord.Embed:
         embed = discord.Embed()
-        embed.set_author(name=f"Game : {self.nom} host par : {self.host.name}", icon_url=self.host.avatar.url)
+        embed.set_author(name=f"Game : {self.nom}  | Host par : {self.host.name}", icon_url=self.host.avatar.url)
         if not self.started and len(self.joueurs) < 4:
             embed.title = "En attente de joueurs"
             embed.description = f"Nombre de Joueurs : ` {len(self.joueurs)}/4 `"
@@ -319,6 +328,9 @@ class Game:
     def deffause_carte(self, joueur: Player, carte: Carte):
         joueur.delete_carte(carte)
     
+    def check_rule(self, rule: str):
+        return self.rules[rule]
+    
     def est_jouable(self, carte: Carte) -> bool:
         car = self.carte_actuelle
         
@@ -332,7 +344,7 @@ class Game:
             return False
 
         if car.valeur in ["+4", "ch"] and carte.valeur in ["+4", "ch"]:
-            return False
+            return self.check_rule("noir_cumul")
 
         elif carte.couleur == car.couleur:
             return True
@@ -357,20 +369,25 @@ class Game:
     def plus_2(self):
         self.somme_plus += 2
         next_joueur = self.get_next_joueur()
+
         if not next_joueur.got_carte_valeur(["+2", "+4", "ch"]):
             for i in range(self.somme_plus):
                 self.joueur_pioche(next_joueur)
-                
-            self.saute_tour()
+            
+            if self.check_rule("+2_pass"):
+                self.saute_tour()
+    
             self.somme_plus = 0
     
     def plus_4(self, couleur: str):
         self.somme_plus += 4
 
-        for i in range(self.somme_plus):
+        for _ in range(self.somme_plus):
             self.joueur_pioche(self.get_next_joueur())
 
-        self.saute_tour()
+        if self.check_rule("+4_pass"):
+            self.saute_tour()
+    
         self.somme_plus = 0
         self.carte_actuelle.couleur = couleur
 
@@ -387,14 +404,22 @@ class Game:
 
         if carte == "pioche":
             if self.somme_plus:
-                for i in range(self.somme_plus):
+                for _ in range(self.somme_plus):
                     self.joueur_pioche(joueur)
 
                 self.somme_plus = 0
             else:
                 self.joueur_pioche(joueur)
+            
+            if not self.rules["pioche_rejoue"]["value"]:
+                self.prochain_joueur()
+            
+            elif self.rules["pioche_rejoue"]["value"] and joueur.pioche:
+                self.prochain_joueur()
+                
+            else:
+                joueur.pioche = True
 
-            self.prochain_joueur()
             return self.get_current_joueur()
         
         self.pose_carte(carte)
@@ -419,6 +444,7 @@ class Game:
         if not joueur.has_cartes():
             self.end = True
 
+        joueur.pioche = False
         self.prochain_joueur()
         self.get_current_joueur().tri_cartes()
         return self.get_current_joueur()
@@ -429,7 +455,7 @@ class Game:
                 self.joueur_pioche(joueur)
 
             joueur.tri_cartes()
-            #joueur.cartes.append(Carte("couleur", "+4"))
+            # joueur.cartes.append(Carte("couleur", "+4"))
 
         while self.pioche[-1].valeur in ["+4", "ch", "pass", "inv", "+2"]:
             random.shuffle(self.pioche)
@@ -456,8 +482,7 @@ class Game:
                 await player.ctx.edit_original_response(embed=self.embed_stat())
             else:
                 await player.ctx.edit_original_response(embeds=[self.embed_stat(), discord.Embed(title="Partie terminé")], view=None)
-
-        
+     
     def build_str(self):
         res = ""
         for key, value in self.__dict__.items():
@@ -513,8 +538,6 @@ class Game_view(discord.ui.View):
         else:
             await valide_intaraction(interaction)
 
-        
-
 class Uno_view(discord.ui.View):
     def __init__(self, game: Game, timeout=180):
         super().__init__(timeout=timeout)
@@ -540,10 +563,10 @@ class Uno_view(discord.ui.View):
             await self.game.get_current_joueur().ctx.edit_original_response(view=Player_view(self.game))
         await valide_intaraction(interaction)
     
-    @discord.ui.button(label="Règle", style=discord.ButtonStyle.blurple, disabled=True)
+    @discord.ui.button(label="Règle", style=discord.ButtonStyle.blurple)
     async def rule_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         if interaction.user == self.game.host:
-            pass
+            await interaction.response.send_message(embed=discord.Embed(title="Règle de la game") ,view=Rule_select_view(interaction, self.game), ephemeral=True)
         await valide_intaraction(interaction)
 
     @discord.ui.button(label="Quitter", style=discord.ButtonStyle.red)
@@ -553,7 +576,6 @@ class Uno_view(discord.ui.View):
             await self.game.update_player_embed()
             await self.game.update_embed()
         await valide_intaraction(interaction)
-
 
 class Cartes_select(discord.ui.Select):
     def __init__(self, game: Game, joueur: Player, options, enable=True) -> None:
@@ -635,7 +657,6 @@ class Color_view(discord.ui.View):
         if not self.game.end:
             await joueur_next.ctx.edit_original_response(view=Player_view(self.game)) #embed=joueur_next.get_embed()
 
-
 class Player_view(discord.ui.View):
     def __init__(self, game: Game, timeout=180):
         super().__init__(timeout=timeout)
@@ -707,6 +728,25 @@ class Game_select_view(discord.ui.View):
         if options!=[]:
             self.add_item(Game_select(game, options))
 
+class Rule_select_view(discord.ui.View):
+    def __init__(self, ctx: discord.Interaction, game: Game, timeout=180):
+        super().__init__(timeout=timeout)
+        options=[discord.SelectOption(label=f"{stat['label']} : {'Oui' if stat['value'] else 'Non'}", description=f"{stat['description']}", value=rule) for rule, stat in game.rules.items()]
+        self.add_item(Rule_select(ctx, game, options))
+
+class Rule_select(discord.ui.Select):
+    def __init__(self,ctx: discord.Interaction, game: Game, options) -> None:
+        super().__init__(placeholder=f"Liste des règle", max_values=len(options), min_values=1, options=options)
+        self.ctx = ctx
+        self.game = game
+        
+    async def callback(self, interaction: discord.Interaction):
+        for regle in self.values:
+            self.game.rules[regle]["value"] = not self.game.rules[regle]["value"]
+        await valide_intaraction(interaction)
+        await self.ctx.delete_original_response()
+
+        
 
 @Lib.app.slash(name="uno", description="créé une nouvelle partie de uno", force_name=True, guilds=None) #, guilds=None to enable mp playing, remove to disable
 async def uno(ctx: discord.Interaction, nom:str):
