@@ -120,11 +120,12 @@ class Carte:
 
 
 class Player:
-    def __init__(self, ctx: discord.Interaction) -> None:
+    def __init__(self, ctx: discord.Interaction, bot: bool = False) -> None:
         self.ctx = ctx
         self.cartes = []
         self.id = ctx.user.id
         self.pioche = False
+        self.bot = bot
     
     def get_carte(self, couleur: str, valeur: str) -> Carte:
         for carte in self.cartes:
@@ -203,10 +204,11 @@ class Game:
         "noir_cumul": {"label": "Cumule changement de couleur", "description": "permet de cumuler les cartes changement de couleur", "value": True},
         "+4_pass": {"label": "Passe +4", "description": "passe apres un +4", "value": True},
         "+2_pass": {"label": "Passe +2", "description": "passe apres un +2", "value": True},
-        "pioche_rejoue": {"label": "Rejouer", "description": "Rejouer après avoir pioché", "value": False}
+        "pioche_rejoue": {"label": "Rejouer", "description": "Rejouer après avoir pioché", "value": False},
+        "complet_by_bot": {"label": "Complété avec des bot", "description": "Ajoute des bot si il manque des joueurs", "value": False}
     }
 
-    def __init__(self, ctx: discord.Interaction, nom) -> None:
+    def __init__(self, ctx: discord.Interaction, nom, max_joueur=4) -> None:
         self.ctx = ctx
         self.host = ctx.user
         self.nom = nom
@@ -217,6 +219,7 @@ class Game:
         self.somme_plus = 0
         self.started = False
         self.pioche = self.gen_pioche()
+        self.max_joueur = max_joueur
 
     def get_joueur(self, user_id: int) -> Player:
         for joueur in self.joueurs:
@@ -263,6 +266,13 @@ class Game:
         return pioche
 
     def add_joueur(self, ctx_joueur: discord.Interaction):
+        if len(self.joueurs)>=self.max_joueur:
+            return False
+
+        if ctx_joueur==None:
+            self.joueurs.append(Player(ctx_joueur, bot=True))
+            return True
+
         if not self.is_in_game(ctx_joueur):
             self.joueurs.append(Player(ctx_joueur))
             return True
@@ -330,6 +340,17 @@ class Game:
     
     def check_rule(self, rule: str):
         return self.rules[rule]
+    
+    def bot_joue(self, bot: Player):
+        jouable = ["pioche"]
+        for carte in bot.cartes:
+            if self.est_jouable(carte):
+                jouable.append(carte)
+
+        if len(jouable) > 1:
+            jouable.remove("pioche")
+        
+        return random.choice(jouable)
     
     def est_jouable(self, carte: Carte) -> bool:
         car = self.carte_actuelle
@@ -450,6 +471,9 @@ class Game:
         return self.get_current_joueur()
 
     def start(self):
+        if self.rules["complet_by_bot"]["value"]:
+            for i in range(self.max_joueur-len(self.joueurs)):
+                self.add_joueur(None)
         for joueur in self.joueurs:
             for i in range(7):
                 self.joueur_pioche(joueur)
@@ -499,8 +523,8 @@ class Games:
     def __init__(self) -> None:
         self.games = []
     
-    def create_game(self, ctx: discord.Interaction, nom: str):
-        game = Game(ctx, nom)
+    def create_game(self, ctx: discord.Interaction, nom: str, max_joueur):
+        game = Game(ctx, nom, max_joueur)
         self.games.append(game)
         return game
 
@@ -603,6 +627,11 @@ class Cartes_select(discord.ui.Select):
                 await self.game.update_player_embed()
                 #await self.joueur.ctx.edit_original_response(embed=self.joueur.get_embed())
                 if not self.game.end:
+                    while joueur_next.bot:
+                        joueur_next = self.game.joue_tour(self.game.bot_joue(joueur_next))
+                        await self.game.update_player_embed()
+                        await self.game.update_embed()
+
                     await joueur_next.ctx.edit_original_response(view=Player_view(self.game))
         else:
             await valide_intaraction(interaction) 
@@ -684,6 +713,11 @@ class Player_view(discord.ui.View):
         await self.game.update_embed()
 
         if not self.game.end:
+            while joueur_next.bot:
+                joueur_next = self.game.joue_tour(self.game.bot_joue(joueur_next))
+                await self.game.update_player_embed()
+                await self.game.update_embed()
+                
             await joueur_next.ctx.edit_original_response(view=Player_view(self.game))
 
 class Game_select(discord.ui.Select):
@@ -749,9 +783,9 @@ class Rule_select(discord.ui.Select):
         
 
 @Lib.app.slash(name="uno", description="créé une nouvelle partie de uno", force_name=True, guilds=None) #, guilds=None to enable mp playing, remove to disable
-async def uno(ctx: discord.Interaction, nom:str):
+async def uno(ctx: discord.Interaction, nom: str, max_joueur: int):
     try:
-        game = games.create_game(ctx, nom)
+        game = games.create_game(ctx, nom, max_joueur)
         await ctx.response.send_message(embed=game.embed_stat(), view=Uno_view(game))
     except Exception as error:
         print(error)
