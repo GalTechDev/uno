@@ -304,7 +304,7 @@ class Game:
         embed.set_author(name=f"Game : {self.nom}  | Host par : {self.host.name}", icon_url=self.host.avatar.url)
         if not self.started and len(self.joueurs) < 4:
             embed.title = "En attente de joueurs"
-            embed.description = f"Nombre de Joueurs : ` {len(self.joueurs)}/4 `"
+            embed.description = f"Nombre de Joueurs : ` {len(self.joueurs)}/{self.max_joueur} `"
             for joueur in self.joueurs:
                 embed.add_field(name=f"{joueur.nom}", value='\u200b')
         else:
@@ -702,7 +702,12 @@ class Color_view(discord.ui.View):
         #await self.player.ctx.edit_original_response(embed=self.player.get_embed())
         await self.game.update_player_embed()
         if not self.game.end:
-            await joueur_next.ctx.edit_original_response(view=Player_view(self.game)) #embed=joueur_next.get_embed()
+            while joueur_next.bot and not self.game.end:
+                joueur_next = self.game.joue_tour(*self.game.bot_joue(joueur_next))
+                await self.game.update_player_embed()
+                await self.game.update_embed()
+            if not self.game.end:
+                await joueur_next.ctx.edit_original_response(view=Player_view(self.game)) #embed=joueur_next.get_embed()
 
 class Player_view(discord.ui.View):
     def __init__(self, game: Game, timeout=180):
@@ -798,6 +803,9 @@ class Rule_select(discord.ui.Select):
         await valide_intaraction(interaction)
         await self.ctx.delete_original_response()
 
+@Lib.event.event()
+async def on_app_command_error(ctx: discord.Interaction, error: discord.app_commands.AppCommandError):
+    print(ctx.data, error)
         
 
 @Lib.app.slash(name="uno", description="créé une nouvelle partie de uno", force_name=True, guilds=None) #, guilds=None to enable mp playing, remove to disable
