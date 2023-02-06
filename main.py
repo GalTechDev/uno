@@ -558,7 +558,7 @@ games = Games()
 
 #------------------------------ View --------------------------------
 class Game_view(discord.ui.View):
-    def __init__(self, game: Game, timeout=180):
+    def __init__(self, game: Game, timeout=None):
         super().__init__(timeout=timeout)
         self.game = game
 
@@ -575,7 +575,7 @@ class Game_view(discord.ui.View):
             await valide_intaraction(interaction)
 
 class Uno_view(discord.ui.View):
-    def __init__(self, game: Game, timeout=180):
+    def __init__(self, game: Game, timeout=None):
         super().__init__(timeout=timeout)
         self.game = game
 
@@ -656,7 +656,7 @@ class Cartes_select(discord.ui.Select):
             pass #ici le joueur choisi une mauvaise carte
         
 class Color_view(discord.ui.View):
-    def __init__(self, game: Game, carte: Carte, enable=True, timeout=180):
+    def __init__(self, game: Game, carte: Carte, enable=True, timeout=None):
         super().__init__(timeout=timeout)
         self.game = game
         self.player = game.get_current_joueur()
@@ -710,7 +710,7 @@ class Color_view(discord.ui.View):
                 await joueur_next.ctx.edit_original_response(view=Player_view(self.game)) #embed=joueur_next.get_embed()
 
 class Player_view(discord.ui.View):
-    def __init__(self, game: Game, timeout=180):
+    def __init__(self, game: Game, timeout=None):
         super().__init__(timeout=timeout)
         self.game = game
         self.player = game.get_current_joueur()
@@ -769,7 +769,7 @@ class Game_select(discord.ui.Select):
         await valide_intaraction(interaction)
 
 class Game_select_view(discord.ui.View):
-    def __init__(self, games: Games, timeout=180):
+    def __init__(self, games: Games, timeout=None):
         super().__init__(timeout=timeout)
         self.games = games
         i=0
@@ -786,7 +786,7 @@ class Game_select_view(discord.ui.View):
             self.add_item(Game_select(game, options))
 
 class Rule_select_view(discord.ui.View):
-    def __init__(self, ctx: discord.Interaction, game: Game, timeout=180):
+    def __init__(self, ctx: discord.Interaction, game: Game, timeout=None):
         super().__init__(timeout=timeout)
         options=[discord.SelectOption(label=f"{stat['label']} : {'Oui' if stat['value'] else 'Non'}", description=f"{stat['description']}", value=rule) for rule, stat in game.rules.items()]
         self.add_item(Rule_select(ctx, game, options))
