@@ -413,15 +413,17 @@ class Game:
     
     def plus_4(self, couleur: str):
         self.somme_plus += 4
+        next_joueur = self.get_next_joueur()
 
-        for _ in range(self.somme_plus):
-            self.joueur_pioche(self.get_next_joueur())
+        if not next_joueur.got_carte_valeur(["+4"]):
+            for _ in range(self.somme_plus):
+                self.joueur_pioche(next_joueur)
 
-        if self.check_rule("+4_pass"):
-            self.saute_tour()
-    
-        self.somme_plus = 0
-        self.carte_actuelle.couleur = couleur
+            if self.check_rule("+4_pass"):
+                self.saute_tour()
+
+            self.somme_plus = 0
+            self.carte_actuelle.couleur = couleur
 
     def change_couleur(self, couleur: str):
         self.somme_plus = 0
@@ -808,7 +810,7 @@ async def on_app_command_error(ctx: discord.Interaction, error: discord.app_comm
     print(ctx.data, error)
         
 
-@Lib.app.slash(name="uno", description="créé une nouvelle partie de uno", force_name=True, guilds=None) #, guilds=None to enable mp playing, remove to disable
+@Lib.app.slash(name="host", description="créé une nouvelle partie de uno", force_name=True)
 async def uno(ctx: discord.Interaction, nom: str="player's game", max_joueur: int=4):
     try:
         game = games.create_game(ctx, nom, max_joueur)
@@ -816,7 +818,7 @@ async def uno(ctx: discord.Interaction, nom: str="player's game", max_joueur: in
     except Exception as error:
         print(error)
     
-@Lib.app.slash(name="join", description="rejoingnez une partie de uno", guilds=None) #, guilds=None to enable mp playing, remove to disable
+@Lib.app.slash(name="join", description="rejoingnez une partie de uno")
 async def join(ctx: discord.Interaction):
     try:
         await ctx.response.send_message(embed=discord.Embed(title="Salon"), view=Game_select_view(games), ephemeral=True)
