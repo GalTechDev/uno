@@ -810,7 +810,7 @@ async def on_app_command_error(ctx: discord.Interaction, error: discord.app_comm
     print(ctx.data, error)
         
 
-@Lib.app.slash(name="host", description="créé une nouvelle partie de uno", force_name=True)
+@Lib.app.slash(name="host", description="créé une nouvelle partie de uno")
 async def uno(ctx: discord.Interaction, nom: str="player's game", max_joueur: int=4):
     try:
         game = games.create_game(ctx, nom, max_joueur)
