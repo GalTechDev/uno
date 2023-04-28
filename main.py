@@ -807,7 +807,7 @@ class Rule_select(discord.ui.Select):
 
 @Lib.event.event()
 async def on_app_command_error(ctx: discord.Interaction, error: discord.app_commands.AppCommandError):
-    print(ctx.data, error)
+    await ctx.response.send_message(ctx.data+error, ephemeral = True)
         
 
 @Lib.app.slash(name="host", description="créé une nouvelle partie de uno")
