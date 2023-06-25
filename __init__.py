@@ -1,5 +1,6 @@
 from system.lib import *
 import random
+import discord
 Lib = App()
 
 card_ref = {
