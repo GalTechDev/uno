@@ -1,6 +1,6 @@
 from system.lib import *
 import random
-Lib = Lib_UsOS()
+Lib = App()
 
 card_ref = {
     '+2 bleu':"https://i.ibb.co/Ht8SBzq/2bleu.png",
