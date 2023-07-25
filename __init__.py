@@ -1,7 +1,7 @@
-from system.lib import *
+from understar.system  import lib
 import random
 import discord
-Lib = App()
+Lib = lib.App()
 
 card_ref = {
     '+2 bleu':"https://i.ibb.co/Ht8SBzq/2bleu.png",
